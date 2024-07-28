@@ -1,14 +1,17 @@
 import mailparser
 import os
 import json
+from attachment_parsing import parse_attachment
+
 from bs4 import BeautifulSoup
 
-# for all emails in a file
+NUMBER_OF_EMAILS = 20
 
-folder_paths = ['/Users/hwangyun/Downloads/solve/received_mail/', '/Users/hwangyun/Downloads/solve/sent_mail/']
-# get all files in the folder
+folder_paths = ['C:/Users/jaeyo/Desktop/Coding/Upstage/email_files/']
 for folder_path in folder_paths:
-    file_names = os.listdir(folder_path)
+    
+    # recent emails first
+    file_names = os.listdir(folder_path)[::-1][:NUMBER_OF_EMAILS]
     json_data = []
 
     for n,file in enumerate(file_names):
@@ -43,6 +46,7 @@ for folder_path in folder_paths:
             'cc': mail.mail["cc"],
             'date': mail.date_json,
             'text_body': extracted_text,
+            'attachments': parse_attachment(file_path, './attachments/')
         
         }
         json_data.append(email_data)
