@@ -14,7 +14,7 @@ def clean_text(text):
     # Replace multiple exclamation marks with a period
     text = re.sub(r'!+', '.', text)
     # Remove any characters that are not alphanumeric or punctuation and korean
-    text = re.sub(r'[^\w\s\.\?\!\,ㄱ-ㅎㅏ-ㅣ가-힣@:-_]', ' ', text)
+    text = re.sub(r'[^\w\s\.\?\!\,ㄱ-ㅎㅏ-ㅣ가-힣@:-_/]', ' ', text)
     # Replace multiple spaces with a single space
     text = re.sub(r' +', ' ', text)
     # Trim leading and trailing spaces
