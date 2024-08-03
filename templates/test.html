@@ -14,7 +14,7 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="http://localhost:8000/static/chat/css/test.css"
+      href="{{url_for('static',path='/chat/css/test.css')}}"
     />
   </head>
   <body>
@@ -52,6 +52,6 @@
       integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
       crossorigin="anonymous"
     ></script>
-    <script src="http://localhost:8000/static/chat/js/test.js"></script>
+    <script src="{{url_for('static',path='/chat/js/test.js')}}"></script>
   </body>
 </html>
