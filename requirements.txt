@@ -118,7 +118,6 @@ langchain-openai==0.1.14
 langchain-text-splitters==0.2.2
 langchain-upstage==0.1.7
 langsmith==0.1.83
-llama_cpp_python==0.2.43
 log-symbols==0.0.14
 lxml==4.9.2
 markdown-it-py==3.0.0
