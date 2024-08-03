@@ -1,0 +1,35 @@
+/* body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f9fa;
+} */
+/* .chatbot {
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.answer {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #e9ecef;
+  border-radius: 4px;
+} */
+.loading-spinner {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+.chatbot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px; /* 위쪽에 마진 추가 */
+  width: 100%;
+}

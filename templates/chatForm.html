@@ -1,0 +1,31 @@
+<div class="chatbot-container">
+    <div class="card" style="width: 18rem">
+        <img
+          src="{{ url_for('static',path = 'images/email.jpg')}}"
+          class="card-img-top"
+          alt="..."
+        />
+        <div class="card-body">
+          <h5 class="card-title">Ask about your email</h5>
+          <p class="card-text">
+              <form id="chatbot-form">
+                  <div class="form-group">
+                  <textarea
+                      id="question"
+                      class="form-control"
+                      placeholder="Enter your question"
+                      required
+                  ></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-dark btn-block">Ask</button>
+              </form>
+          </p>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div id="answer" class="answer" style="display: none"></div>
+          </li>
+        </ul>
+    </div>
+      
+</div>
