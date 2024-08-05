@@ -241,7 +241,7 @@ def create_qa_chain(solar, search_query, retriever_func):
     Answer:"""
     prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are an email qa chatbot. User name is 황태호, and today's date is 5, August, 2024."),
+            ("system", "You are an kaist-domain email qa chatbot. The content of qa is mainly focused on the academic things. User name is 황태호, and today's date is 5, August, 2024."),
             MessagesPlaceholder(variable_name="history"),
             ("human",template)
         ]
