@@ -111,15 +111,15 @@ def main():
     
     # Load and preprocess emails
     current_dir = os.path.dirname(__file__)
-    file_name = "cleaned_email_data.json"
+    file_name = "cleaned_email_data_v2.json"
     # data 폴더의 JSON 파일 경로를 생성
     file_path = os.path.join(current_dir, '..', 'data', 'graph_rag', file_name)
     emails = load_and_preprocess_emails(file_path)
     
     # Split emails
     text_splitter = TokenTextSplitter(chunk_size=2000, chunk_overlap=200)
-    n_mails_to_use = 50
-    texts, subjects, cc, froms, tos, dates, times = split_emails(emails[:n_mails_to_use], text_splitter)
+    n_mails_to_use = -100
+    texts, subjects, cc, froms, tos, dates, times = split_emails(emails[n_mails_to_use:], text_splitter)
     
     # Create LLM and transformer
     llm = ChatOpenAI(temperature=0, model_name="gpt-4o")

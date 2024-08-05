@@ -180,7 +180,7 @@ def create_summarize_chain(llm):
 # Retriever
 def retriever(question: str, vector_index, entity_chain, graph, summarize_chain):
     print(f"Search query: {question}")
-    unstructured_data = [el.page_content for el in vector_index.similarity_search(question, k=1)]
+    unstructured_data = [el.page_content for el in vector_index.similarity_search(question, k=10)]
     structured_data, body_text = structured_retriever(question, entity_chain, graph)
     print(structured_data)
     
@@ -237,7 +237,7 @@ def create_qa_chain(solar, search_query, retriever_func):
     {context}
 
     Question: {question}
-    Use natural language and be concise.
+    Use natural language and be concise. Use Korean.
     Answer:"""
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -254,7 +254,7 @@ def create_qa_chain(solar, search_query, retriever_func):
         }
     )
 
-    chain = prompt | solar | StrOutputParser()
+    chain = prompt | llm | StrOutputParser()
 
     return retriever_chain, chain
 
@@ -302,7 +302,7 @@ summarize_chain = create_summarize_chain(llm)
 condense_question_prompt = create_condense_question_prompt()
 search_query = create_search_query(llm, condense_question_prompt)
 retriever_func = lambda question: retriever(question, vector_index, entity_chain, graph, summarize_chain)
-retriever_chain, chain = create_qa_chain(solar, search_query, retriever_func)
+retriever_chain, chain = create_qa_chain(llm, search_query, retriever_func)
 groundedness_check = UpstageGroundednessCheck()
 
 @router.get("/",response_class=HTMLResponse)

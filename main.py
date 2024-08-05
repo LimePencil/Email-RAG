@@ -30,7 +30,7 @@ async def render_homepage(request: Request):
 
 @app.get("/test",response_class=HTMLResponse)
 async def test(request: Request):
-    return templates.TemplateResponse('test.html',{"request":request})
+    return templates.TemplateResponse('test_v2.html',{"request":request})
 
 
 app.include_router(chat.router)
