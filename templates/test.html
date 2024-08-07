@@ -17,20 +17,14 @@
       href="{{url_for('static',path='/chat/css/test.css')}}"
     />
   </head>
-  <body class="d-flex flex-column vh-100">
-    {%include 'navbar.html'%}
-    <main class="container-fluid d-flex flex-column vh-100">
-      <div class="chat-window flex-grow-1 overflow-auto">
-        <div id="chat-history" class="chat-history p-3">
-          <!-- 채팅 기록이 여기에 추가됩니다 -->
-        </div>
-        
-      </div>
-      {%include 'footer.html'%}
+  <body>
+    <div class="content-wrapper">
+      {%include 'navbar.html'%}
+      <main id="chat-history">
+        <!-- 채팅 기록이 여기에 추가됩니다 -->
+      </main>
     </div>
-
-    
-
+    {%include 'footer.html'%}
     <!-- 로딩 스피너 -->
     <div class="loading-spinner">
       <div
