@@ -1,12 +1,11 @@
 from fastapi import FastAPI, Depends, APIRouter, Request
 #import models
 #from database import engine
-from routers import chat
+from routers import chat_v2 as chat
 from starlette.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-
 
 app = FastAPI()
 

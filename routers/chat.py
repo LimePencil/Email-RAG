@@ -1,3 +1,5 @@
+#version of using graph rag
+
 import sys
 sys.path.append("..")
 
