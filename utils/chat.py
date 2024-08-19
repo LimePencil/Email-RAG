@@ -17,7 +17,9 @@ from langchain_community.vectorstores import Neo4jVector
 from langchain_upstage import UpstageEmbeddings, ChatUpstage, UpstageGroundednessCheck
 from langchain.chains import LLMChain
 
+import os
 
+# Environment setup
 
 # Model definitions
 class Entities(BaseModel):
@@ -46,7 +48,7 @@ def init_components():
 # Entity extraction
 def create_entity_chain(llm):
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are extracting organization and person entities from the text."),
+        ("system", "You are extracting organization and person entities from the text. e.g) John Doe, KAIST, Apple Inc., 사회적 감정에 대한 실험, Floid IoT 실험, NLP*CL 연구실, 피시험자 번호, 2023년 6월 23일, 2023-06-23, 2023/06/23, 2023.06.23, doubleyy@kaist.ac.kr, ME251. If you get date or time, please convert it to the format of 'YYYY-MM-DD'."),
         ("human", "Use the given format to extract information from the following input: {question}"),
     ])
     return prompt | llm.with_structured_output(Entities)
@@ -148,22 +150,21 @@ def structured_retriever(question: str, entity_chain, graph):
 
 # Summarize chain
 def create_summarize_chain(llm):
-    template = "Given these relations:\n{relations}\n\nPlease make a concise natural language form summary. Do not any explanation:"
+    template = "Given these relations:\n{relations}\n\nPlease make a concise natural language form summary in korean. Do not any explanation:"
     prompt = PromptTemplate(template=template, input_variables=["relations"])
     return LLMChain(llm=llm, prompt=prompt)
 
 # Retriever
 def retriever(question: str, vector_index, entity_chain, graph, summarize_chain):
     print(f"Search query: {question}")
-    unstructured_data = [el.page_content for el in vector_index.similarity_search(question, k=1)]
+    unstructured_data = [el.page_content for el in vector_index.similarity_search(question, k=10)]
     structured_data, body_text = structured_retriever(question, entity_chain, graph)
-    print(structured_data)
     
+    final_data = structured_data
     if structured_data:
         summary = summarize_chain.run(relations=structured_data)
-        final_data = f"{summary}\n"
-    else:
-        final_data = ""
+        final_data += f"{summary}\n"
+    
     
     for value in body_text.values():
         final_data += f"\n{value}"
@@ -175,7 +176,7 @@ def retriever(question: str, vector_index, entity_chain, graph, summarize_chain)
 # Condense question
 def create_condense_question_prompt():
     template = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question,
-    in its original language.
+    in its original language. 
     Chat History:
     {chat_history}
     Follow Up Input: {question}
@@ -207,12 +208,17 @@ def create_search_query(llm, condense_question_prompt):
     )
 
 # QA Chain
-def create_qa_chain(solar, search_query, retriever_func):
-    template = """Answer the question based only on the following context:
+def create_qa_chain(llm, search_query, retriever_func):
+    # get date
+    import datetime
+    now = datetime.datetime.now()
+
+
+    template = f"""From now on, you are Email QA Chatbot. It is academic domain. the User name is Taeho Hwang. and Today date is {now}.\n""" + """Answer the question based only on the following context:
     {context}
 
     Question: {question}
-    Use natural language and be concise.
+    Use natural language and be concise in korean. You should consider the today's date and I am Taeho Hwang.
     Answer:"""
     prompt = ChatPromptTemplate.from_template(template)
 
@@ -223,13 +229,13 @@ def create_qa_chain(solar, search_query, retriever_func):
         }
     )
 
-    chain = prompt | solar | StrOutputParser()
+    chain = prompt | llm | StrOutputParser()
 
     return retriever_chain, chain
 
 def qa_chain(question: str, retriever_chain, chain, groundedness_check):
     retrieval = retriever_chain.invoke({"question": question})
-
+    answer = chain.invoke(retrieval)
     for _ in range(5):
         answer = chain.invoke(retrieval)
         gc_result = groundedness_check.invoke({"context": retrieval["context"], "answer": answer})
@@ -248,11 +254,12 @@ def main():
     summarize_chain = create_summarize_chain(llm)
     condense_question_prompt = create_condense_question_prompt()
     search_query = create_search_query(llm, condense_question_prompt)
+    print("Search Query:", search_query)
     retriever_func = lambda question: retriever(question, vector_index, entity_chain, graph, summarize_chain)
-    retriever_chain, chain = create_qa_chain(solar, search_query, retriever_func)
+    retriever_chain, chain = create_qa_chain(llm, search_query, retriever_func)
     groundedness_check = UpstageGroundednessCheck()
 
-    question = "황태호에게 2024년 8월 30일에 온 메일은 어떤 내용이야?"
+    question = "황태호에게 2023-8-30에 온 메일은 어떤 내용이야?"
     answer = qa_chain(question, retriever_chain, chain, groundedness_check)
     print(f"Answer: {answer}")
 
