@@ -1,4 +1,7 @@
 # Smart Email
+Our project made answering ai using rag and solar llm. Thanks to powerful embedding of solar, our powerful rag extremely increased accuracy of our answers. 
+Furthermore, we leveraged self-querying which provides high performance answering with meta-data. 
+Moreover, we tried deidentification of personal informations in order to prevent them from leaking to llm server.
 
 ## Dependency
 https://github.com/LimePencil/Email-RAG/blob/main/requirements.txt
