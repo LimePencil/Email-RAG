@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 ### 2. Download email
 Locate your email json file to ```data/graph_rag/``` directory
-### 3. upload to mongodb
+### 3. upload email to mongodb
 https://github.com/LimePencil/Email-RAG/blob/main/utils/db_upload.py
 ### 4. indexing
 Upload embedding to elastic cloud  
