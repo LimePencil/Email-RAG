@@ -1,5 +1,5 @@
 # Smart Email
 
-# Dependency
+### Dependency
 
-# Contributors
+### Contributors
