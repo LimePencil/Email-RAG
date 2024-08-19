@@ -16,14 +16,29 @@ https://github.com/LimePencil/Email-RAG/blob/main/requirements.txt
 ```shell
 pip install -r requirements.txt
 ```
-
 ### 2. Download email
 Locate your email json file to ```data/graph_rag/``` directory
+*Unfortunately, due to the privacy problem, we cannot provide our dataset.
+Thus, there might exist some discrepencies from our test environments.  
+
 ### 3. upload email to mongodb
 https://github.com/LimePencil/Email-RAG/blob/main/utils/db_upload.py
+
 ### 4. indexing
 Upload embedding to elastic cloud  
 https://github.com/LimePencil/Email-RAG/blob/main/utils/indexing_deidentification.py
+
+## Used Upstage Api's
+- Upstage Document OCR
+
+- Upstage Layout Analyzer
+
+- Embedding, Solar embedding-1-Large
+
+- LLM, Solar-mini-chat
+
+- Groundedness Check, Solar-1-mini-groundedness-check
+
 
 ## Test
 ```shell
