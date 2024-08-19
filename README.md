@@ -3,6 +3,9 @@ Our project made answering ai using rag and solar llm. Thanks to powerful embedd
 Furthermore, we leveraged self-querying which provides high performance answering with meta-data.  
 Moreover, we tried deidentification of personal informations in order to prevent them from leaking to llm server.
 
+## Environment
+python 3.11.2
+
 ## Dependency
 https://github.com/LimePencil/Email-RAG/blob/main/requirements.txt
 
