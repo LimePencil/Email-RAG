@@ -2,7 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("chatbot-form");
   const chatHistory = document.getElementById("chat-history");
   const questionInput = document.getElementById("question");
+  const refreshButton = document.getElementById("refresh-button"); // 새로고침 버튼 요소
+
   let chatHistoryData = [];
+
+  refreshButton.addEventListener("click", () => {
+    location.reload(); // 페이지 새로고침
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();

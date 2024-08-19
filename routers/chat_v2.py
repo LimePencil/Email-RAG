@@ -132,7 +132,7 @@ def setup_retriever():
         es_api_key=os.getenv("ELASTIC_API_KEY")
     )
 
-    llm = ChatOpenAI(temperature=0, model_name="gpt-4o")
+    llm = ChatOpenAI(temperature=0.7, model_name="gpt-4o",frequency_penalty=1.0)
     query_constructor = get_query_constructor_prompt(
         document_content_description,
         metadata_field_info,
@@ -149,17 +149,28 @@ def setup_retriever():
 
 def get_query_examples():
     return [
-        ("DB담당자가 보낸 요가매트 관련된 메일을 찾아줘.", {"query": "요가매트", "filter": 'like("from", "%DB담당자%")'}),
-        ("학생#전체가 보낸 세미나 메일 알려줘.", {"query": "세미나 메일 알려줘.", "filter": 'contain("from", "학생")'}),
-        ("제목에 대학원 총학생회가 들어간 메일 알려줘.", {"query": "대학원 총학생회", "filter": 'like("subject", "대학원%총%학생회")'}),
+        ("류석영 교수님이 보낸 세미나 관련된 메일을 찾아줘.", {"query": "세미나 관련된 메일", "filter": 'like("from", "%류석영%")'}),
+        ("DB담당자님이 보낸 요가매트 관련된 메일을 찾아줘.", {"query": "요가매트 관련된 메일", "filter": 'like("from", "%DB담당자%")'}),
+        ("류석영 교수님이 2023년 5월 1일부터 2023년 7월 31일까지 보낸 세미나 관련 메일을 찾아줘.", {
+"query": "세미나 관련 메일을 찾아줘.",
+"filter": 'and(like("from", "%류석영%"), gte("year", 2023), lte("year", 2023), gte(and("month", 5), "day", 1), lte(and("month", 7), "day", 31))'
+}),
+        ("DB담당자가 보낸 요가매트 관련된 메일을 찾아줘.", {"query": "요가매트 관련된 메일", "filter": 'like("from", "%DB담당자%")'}),
+        ("DB담당자한테서 온 요가매트 관련된 메일을 찾아줘.", {"query": "요가매트 관련된 메일", "filter": 'like("from", "%DB담당자%")'}),
+        ("학생#전체가 보낸 세미나 메일 알려줘.", {"query": "세미나 메일", "filter": 'like("from", "%학생%")'}),
+        ("김현수 교수님이 보낸 제목에 '연구'가 포함된 메일을 모두 찾아줘.", {"query": "연구 관련된 메일을 찾아줘.", "filter": 'and(like("from", "%김현수%"), like("subject", "%연구%"))'}),
+        ("2023년 3월부터 2023년 6월까지 학생#전체가 보낸 제목에 '강연'이나 '워크샵'이 포함된 메일을 찾아줘.", {
+    "query": "강연 워크샵",
+    "filter": 'and(like("from", "%학생#전체%"), gte("year", 2023), lte("year", 2023), gte(and("month", 3), "day", 1), lte(and("month", 6), "day", 30), or(like("subject", "%강연%"), like("subject", "%워크샵%")))'}),
+        ("제목에 '대학원 총학생회'가 들어간 메일 알려줘.", {"query": "대학원 총학생회 관련된 메일을 찾아줘.", "filter": 'like("subject", "%대학원%총%학생회%")'}),
+        ("제목에 혁신 교육이 들어간 메일 알려줘.", {"query": "혁신 교육 관련된 메일을 알려줘.", "filter": 'like("subject", "%혁신%교육%")'}),
         ('오늘은 2024년 8월 8일이야. 오늘 전에 온 도서관에 관련된 메일 알려줘.', {"query": "도서관에 관련된 메일 알려줘.", "filter": 'and(lt("year", 2024), or(lt("month", 8), and(eq("month", 8), lt("day", 8))))'}),
-        ('나는 황태호야. 내가 2023년 10월 26일에 보낸 KCC 2024 학회 관련 메일 알려줘.', {"query": "KCC 2024 학회 관련 메일 알려줘.", "filter": 'and(eq("from", "황태호"), eq("year", 2023), eq("month", 10), eq("day", 26))'}),
-        ('KCC 2024 관련 메일 알려줘.', {"query": "", "filter": 'NO_FILTER'}),
-        ('업스테이지 단기 강의 관련 메일 알려줘.', {"query": "", "filter": 'NO_FILTER'}),
+        ('나는 황태호야. 내가 2023년 10월 26일에 보낸 KCC 2024 학회 관련 메일 알려줘.', {"query": "KCC 2024 학회 관련 메일 알려줘.", "filter": 'and(like("from", "%황태호%"), eq("year", 2023), eq("month", 10), eq("day", 26))'}),
+        ("박종철 교수님이 황태호에게 답장한 이메일의 내용은 무엇인가요?", {"query": "박종철 교수님이 황태호에게 답장한 이메일의 내용", "filter": 'and(like("from", "%박종철%"), like("to", "%황태호%"))'},)
     ]
 
 def setup_chat_chain(retriever):
-    llm = ChatOpenAI(temperature=0, model_name="gpt-4o")
+    llm = ChatOpenAI(temperature=0.7, model_name="gpt-4o", frequency_penalty=1.0)
     rag_prompt = ChatPromptTemplate.from_messages([
         ("system", "You are an assistant for KAIST academic email question-answering tasks. My name is 황태호. My email address is doubleyyh@kaist.ac.kr. Today is 08.07. 7PM. Use the following pieces of retrieved email content to answer the question considering the history of the conversation. If you don't know the answer, just say that you don't know. \n---\nCONTEXT:\n{context}"),
         MessagesPlaceholder(variable_name="history"),
@@ -220,17 +231,17 @@ example:
         print(context)
         history_langchain_format = format_chat_history(history)
         
-        # for _ in range(5):
-        response = chain.invoke({
-            "message": message, 
-            "context": context,
-            "history": history_langchain_format
-        })
-            # gc_result = UpstageGroundednessCheck().invoke({"context": results_docs, "answer": response})
-            # if gc_result.lower().startswith("grounded"):
-            #     print("✅ Groundedness check passed")
-            #     return response
-            # print("❌ Groundedness check failed")
+        for _ in range(5):
+            response = chain.invoke({
+                "message": message, 
+                "context": context,
+                "history": history_langchain_format
+            })
+            gc_result = UpstageGroundednessCheck().invoke({"context": context, "answer": response})
+            if gc_result.lower().startswith("grounded"):
+                print("✅ Groundedness check passed")
+                return response
+            print("❌ Groundedness check failed")
         return response
 
     return chat
@@ -242,10 +253,10 @@ def create_search_query(llm, condense_question_prompt, date_time_question_prompt
             RunnablePassthrough.assign(chat_history=lambda x: format_chat_history(x["chat_history"]))
             | condense_question_prompt
             | llm
-            | StrOutputParser(),
+            | StrOutputParser()
             # | date_time_question_prompt
             # | llm
-            # | StrOutputParser(),
+            # | StrOutputParser()
         ),
         RunnableLambda(lambda x : x["question"])
         # | date_time_question_prompt
@@ -276,17 +287,10 @@ def generate_context(results_docs):
         )
 
     from transformers import AutoTokenizer
-    import tiktoken
-    # tokenizer = AutoTokenizer.from_pretrained("upstage/SOLAR-10.7B-Instruct-v1.0", data_dir="/data/taeho/self-rag/model")
-    # encoded_context = tokenizer.encode(context, max_length=2000, truncation=True)
-    # truncated_context = tokenizer.decode(encoded_context)
+    tokenizer = AutoTokenizer.from_pretrained("upstage/SOLAR-10.7B-Instruct-v1.0", data_dir="/data/taeho/self-rag/model")
+    encoded_context = tokenizer.encode(context, max_length=4000, truncation=True)
+    truncated_context = tokenizer.decode(encoded_context)
     
-    truncated_context = context
-    encoding = tiktoken.encoding_for_model(model_name="gpt-4o")
-    tokens = encoding.encode(context)
-    if len(tokens) > 25000:
-        truncated_tokens = tokens[:25000]
-        truncated_context = encoding.decode(truncated_tokens)
     return truncated_context
 
 
